@@ -13,12 +13,17 @@ export class TransactionsService {
 
   async getAll(
     beforeTimestamp: number = Infinity,
+    input: string = '0x',
     limit: number = 100,
   ): Promise<Transaction[]> {
     const conditions: any = {};
 
     if (beforeTimestamp !== Infinity) {
       conditions.timestamp = { $lt: beforeTimestamp };
+    }
+
+    if (input !== '0x') {
+      conditions.input = input;
     }
 
     const boundedLimit = Math.max(1, Math.min(200, limit));
