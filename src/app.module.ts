@@ -6,7 +6,12 @@ import { TransactionModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_DB_URL),
+    MongooseModule.forRoot(process.env.MONGODB_URL, {
+      auth: {
+        user: process.env.MONGODB_USERNAME,
+        password: process.env.MONGODB_PASSWORD,
+      },
+    }),
     BlocksModule,
     TransactionModule,
   ],
