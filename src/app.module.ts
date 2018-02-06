@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { BlocksModule } from './blocks/blocks.module';
+import { MobileModule } from './mobile/mobile.module';
 import { TransactionModule } from './transactions/transactions.module';
 
 @Module({
@@ -13,6 +14,7 @@ import { TransactionModule } from './transactions/transactions.module';
       },
     }),
     BlocksModule,
+    MobileModule,
     TransactionModule,
   ],
 })
