@@ -30,9 +30,14 @@ export class BlocksService {
       .exec();
   }
 
-  async findOne(number: number): Promise<Block> {
+  async findOne(blockId: number | string): Promise<Block> {
     return await this.blocksModel
-      .findOne({ number })
+      .findOne({
+        $or: [
+          { number: blockId },
+          { hash: blockId },
+        ],
+      })
       .exec();
   }
 }

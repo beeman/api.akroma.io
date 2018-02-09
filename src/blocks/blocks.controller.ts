@@ -33,12 +33,12 @@ export class BlocksController {
       .getAll(beforeBlockId, limit);
   }
 
-  @Get(':number')
+  @Get(':id')
   @ApiResponse({ status: HttpStatus.OK, description: 'OK' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `Block doesn't exist` })
-  async findOne(@Param('number') blockNumber: number): Promise<Block> {
+  async findOne(@Param('id') blockId: number | string): Promise<Block> {
     const block = await this.blocksService
-      .findOne(blockNumber);
+      .findOne(blockId);
 
     if (!block) { throw new HttpException(`Block doesn't exist`, HttpStatus.NOT_FOUND); }
 
