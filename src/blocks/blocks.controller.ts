@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiImplicitQuery, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 
 import { Block } from './models/block';
@@ -24,7 +24,7 @@ export class BlocksController {
     description: 'Limit results (default: 100, max: 200)',
     type: 'number',
   })
-  @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponse({ status: HttpStatus.OK, description: 'OK' })
   async getAll(
     @Query('before_block') beforeBlockId: number = Infinity,
     @Query('limit') limit: number = 100,
@@ -34,9 +34,14 @@ export class BlocksController {
   }
 
   @Get(':number')
-  @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponse({ status: HttpStatus.OK, description: 'OK' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `Block doesn't exist` })
   async findOne(@Param('number') blockNumber: number): Promise<Block> {
-    return await this.blocksService
+    const block = await this.blocksService
       .findOne(blockNumber);
+
+    if (!block) { throw new HttpException(`Block doesn't exist`, HttpStatus.NOT_FOUND); }
+
+    return block;
   }
 }
