@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { AddressModule } from './address/address.module';
 import { BlocksModule } from './blocks/blocks.module';
 import { MobileModule } from './mobile/mobile.module';
 import { TransactionModule } from './transactions/transactions.module';
@@ -16,6 +17,7 @@ import { TransactionModule } from './transactions/transactions.module';
     BlocksModule,
     MobileModule,
     TransactionModule,
+    AddressModule,
   ],
 })
 export class ApplicationModule { }
