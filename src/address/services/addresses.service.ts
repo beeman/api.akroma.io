@@ -28,14 +28,15 @@ export class AddressesService {
     const address: Address = {
       hash: addressHash,
       balance: ether,
-      mined: await this.blockModel.count({ miner: addressHash }).exec(),
+      mined: 0,
+      // mined: await this.blockModel.count({ miner: addressHash }).exec(),
       transactionsInitiatedCount: await this.web3.eth.getTransactionCount(addressHash),
       transactions: await this.transactionModel.find({
         $or: [
           { to: addressHash },
           { from: addressHash },
         ],
-      }).select('-_id').exec(),
+      }).limit(10).sort('-blockNumber').lean(true).select('-_id').exec(),
     };
 
     return address as Address;
