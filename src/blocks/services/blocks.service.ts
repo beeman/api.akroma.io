@@ -27,17 +27,21 @@ export class BlocksService {
       .find(conditions)
       .limit(boundedLimit)
       .sort({ timestamp: 'desc' })
-      .exec();
+      .lean(true)
+      .select('-_id -__v')
+      .exec() as Block[];
   }
 
-  async findOne(blockId: number | string): Promise<Block> {
+  async findOne(blockId: string): Promise<Block> {
     return await this.blocksModel
       .findOne({
         $or: [
           { number: blockId },
-          { hash: blockId },
+          { hash: blockId.toLowerCase() },
         ],
       })
-      .exec();
+      .lean(true)
+      .select('-_id -__v')
+      .exec() as Block;
   }
 }

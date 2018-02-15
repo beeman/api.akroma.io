@@ -32,12 +32,16 @@ export class TransactionsService {
       .find(conditions)
       .limit(boundedLimit)
       .sort({ timestamp: 'desc' })
-      .exec();
+      .lean(true)
+      .select('-_id')
+      .exec() as Transaction[];
   }
 
   async findOne(hash: string): Promise<Transaction> {
     return await this.transactionModel
-      .findOne({ hash })
-      .exec();
+      .findOne({ hash: hash.toLowerCase() })
+      .lean(true)
+      .select('-_id')
+      .exec() as Transaction;
   }
 }

@@ -11,9 +11,9 @@ export class AddressController {
     private readonly addressesService: AddressesService,
   ) { }
 
-  @Get(':hash')
+  @Get(':address')
   @ApiResponse({ status: HttpStatus.OK })
-  async findOne(@Param('hash') address: string): Promise<Address> {
+  async findOne(@Param('address') address: string): Promise<Address> {
     return await this.addressesService
       .findOne(address);
   }

@@ -36,7 +36,7 @@ export class BlocksController {
   @Get(':id')
   @ApiResponse({ status: HttpStatus.OK, description: 'OK' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: `Block doesn't exist` })
-  async findOne(@Param('id') blockId: number | string): Promise<Block> {
+  async findOne(@Param('id') blockId: string): Promise<Block> {
     const block = await this.blocksService
       .findOne(blockId);
 
