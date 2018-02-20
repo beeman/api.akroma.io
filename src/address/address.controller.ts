@@ -25,14 +25,14 @@ export class AddressController {
   @ApiImplicitQuery({
     name: 'limit',
     required: false,
-    description: 'Limit results (default: 100, max: 200)',
-    type: 'Number',
+    description: 'Limit results (default: 20, min: 1, max: 50)',
+    type: 'number',
   })
   @ApiImplicitQuery({
     name: 'offset',
     required: false,
     description: 'Offset results (default: 0)',
-    type: 'Number',
+    type: 'number',
   })
   @ApiResponse({ status: HttpStatus.OK })
   getTransactionsForAddress(

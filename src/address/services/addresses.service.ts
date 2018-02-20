@@ -50,6 +50,8 @@ export class AddressesService {
   }
 
   async getTransactionsForAddress(addressHash: string, limit: number = 20, offset: number = 0): Promise<PagingObject<Transaction>> {
+    const boundedLimit = Math.max(1, Math.min(50, limit));
+
     const countQuery = this.transactionModel
       .find({
         $or: [
@@ -67,20 +69,20 @@ export class AddressesService {
         ],
       })
       .sort('-timestamp')
-      .skip(offset * limit)
-      .limit(limit)
+      .skip(offset * boundedLimit)
+      .limit(boundedLimit)
       .lean()
       .select('-_id');
 
     const [items, total] = await Promise.all([query, countQuery]);
 
     const transactions: PagingObject<Transaction> = {
-      limit,
+      limit: boundedLimit,
       offset,
       total,
       items: items as Transaction[],
-      next: this.getNextUrl(limit, offset, total),
-      previous: this.getPreviousUrl(limit, offset, total),
+      next: this.getNextUrl(boundedLimit, offset, total),
+      previous: this.getPreviousUrl(boundedLimit, offset, total),
     };
 
     return transactions;
