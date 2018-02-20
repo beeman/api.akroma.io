@@ -6,6 +6,7 @@ const BigNumber = require('bignumber.js');
 
 // import { Block } from '../../blocks/models/block';
 // import { BlockSchema } from '../../blocks/schemas/block.schema';
+import { PagingObject } from '../../models/paging-object';
 import { Transaction } from '../../transactions/models/transaction';
 import { TransactionSchema } from '../../transactions/schemas/transaction.schema';
 import { Address } from '../models/address';
@@ -40,11 +41,71 @@ export class AddressesService {
         })
         .limit(10)
         .sort('-blockNumber')
-        .lean(true)
+        .lean()
         .select('-_id')
         .exec(),
     };
 
     return address as Address;
+  }
+
+  async getTransactionsForAddress(addressHash: string, limit: number = 20, offset: number = 0): Promise<PagingObject<Transaction>> {
+    const countQuery = this.transactionModel
+      .find({
+        $or: [
+          { to: addressHash.toLowerCase() },
+          { from: addressHash.toLowerCase() },
+        ],
+      })
+      .count();
+
+    const query = this.transactionModel
+      .find({
+        $or: [
+          { to: addressHash.toLowerCase() },
+          { from: addressHash.toLowerCase() },
+        ],
+      })
+      .sort('-timestamp')
+      .skip(offset * limit)
+      .limit(limit)
+      .lean()
+      .select('-_id');
+
+    const [items, total] = await Promise.all([query, countQuery]);
+
+    const transactions: PagingObject<Transaction> = {
+      limit,
+      offset,
+      total,
+      items: items as Transaction[],
+      next: this.getNextUrl(limit, offset, total),
+      previous: this.getPreviousUrl(limit, offset, total),
+    };
+
+    return transactions;
+  }
+
+  private getNextUrl(limit: number, offset: number, total: number): string | null {
+    const updatedOffset = offset + 1;
+    const hasOnlyOnePage = limit >= total;
+    const isOnLastPage = (updatedOffset * limit) >= total;
+
+    if (hasOnlyOnePage || isOnLastPage) {
+      return null;
+    }
+
+    return `?limit=${limit}&offset=${offset + 1}`;
+  }
+
+  private getPreviousUrl(limit: number, offset: number, total: number): string | null {
+    const hasOnlyOnePage = limit >= total;
+    const isOnFirstPage = offset === 0 && total >= limit;
+
+    if (hasOnlyOnePage || isOnFirstPage) {
+      return null;
+    }
+
+    return `?limit=${limit}&offset=${offset - 1}`;
   }
 }
